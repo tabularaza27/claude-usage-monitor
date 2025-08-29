@@ -2,6 +2,8 @@
 
 A comprehensive monitoring dashboard for Claude AI usage with real-time environmental impact tracking. Provides both personal and team-level insights into token usage, CO2 emissions, and environmental equivalents based on research-validated calculations.
 
+![alt text](image.png)
+
 ## 🏗️ Architecture Overview
 
 ```
