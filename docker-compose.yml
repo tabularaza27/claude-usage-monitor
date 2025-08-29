@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      # Mount data directory for SQLite database
+      - ./data:/app/data
+      # Mount logs directory
+      - ./logs:/app/logs
+      # Mount claude-monitor log file (if it exists locally)
+      - ./daily-usage.log:/app/daily-usage.log:ro
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/data/usage.db
+      - CLAUDE_LOG_FILE=daily-usage.log
+      - PORT=3001
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+      - VITE_API_BASE_URL=http://backend:3001
+    restart: unless-stopped
+
+volumes:
+  data:
+  logs:
